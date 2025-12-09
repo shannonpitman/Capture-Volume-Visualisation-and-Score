@@ -1,8 +1,8 @@
 function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
-%Visualizes camera coverage of target points with color coding:
-% Green: No cameras see the point
-% Magenta: Only one camera sees the point  
-% Red: Two or more cameras see the point
+% Visualizes camera coverage of target points with color coding:
+% Red: No cameras see the point
+% Cyan: Only one camera sees the point  
+% Green: Two or more cameras see the point
 
     numCams = specs.Cams;
     
@@ -31,6 +31,7 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
         
         cameraCoverage(p) = visibleCount;
     end
+
     % Calculate statistics
     coverageStats.numPoints = numPoints;
     coverageStats.zeroCameras = sum(cameraCoverage == 0);
@@ -48,7 +49,7 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
     colors = zeros(numPoints, 3);
     parfor p = 1:numPoints
         if cameraCoverage(p) == 0
-            colors(p,:) = [1, 0, 0]; % Red:  no cameras
+            colors(p,:) = [1, 0, 0]; % Red: no cameras
         elseif cameraCoverage(p) == 1
             colors(p,:) = [0, 1, 1]; % Cyan: one camera
         else
@@ -56,9 +57,60 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
         end
     end
     
-    %Colour coded points
+
     figure('Name', figTitle, 'Position', [100, 100, 800, 600]);
+    % Subplot 1: Colour coded scatter plot
+    subplot(1, 2, 1);
     scatter3(TargetSpace(:,1), TargetSpace(:,2), TargetSpace(:,3), 30, colors, 'filled');
+    axis equal;
+    grid on;
+    xlabel('X (m)');
+    ylabel('Y (m)');
+    zlabel('Z (m)');
+    title(figTitle);
+    view(45, 30);
+
+    % Subplot 2: Pie chart
+    subplot(1, 2, 2);
+    pieData = [coverageStats.zeroCamerasPercent, ...
+               coverageStats.oneCameraPercent, ...
+               coverageStats.twoPlusCamerasPercent];
+    pieLabels = {'0 Cameras', '1 Camera', '2+ Cameras'};
+    pieColors = [1, 0, 0; 0, 1, 1; 0, 1, 0]; % Match scatter plot colors
+    
+    p = pie(pieData);
+    
+    % Set colors for pie slices
+    for i = 1:2:length(p)
+        p(i).FaceColor = pieColors((i+1)/2, :);
+    end
+    
+    % Add percentage labels to pie slices
+    for i = 2:2:length(p)
+        p(i).String = sprintf('%.1f%%', pieData(i/2));
+        p(i).FontSize = 12;
+        p(i).FontWeight = 'bold';
+    end
+    
+    % Add callout for max coverage in 2+ cameras slice
+    % Find the text object for "2+ Cameras" slice
+    textObjs = findobj(gca, 'Type', 'text');
+    for i = 1:length(textObjs)
+        if contains(textObjs(i).String, sprintf('%.1f%%', coverageStats.twoPlusCamerasPercent))
+            % Add annotation with max coverage
+            pos = textObjs(i).Position;
+            text(pos(1)*1.3, pos(2)*1.3, sprintf('Max: %d cameras', coverageStats.maxCoverage), ...
+                'FontSize', 10, 'FontWeight', 'bold', ...
+                'BackgroundColor', 'w', 'EdgeColor', 'k', 'Margin', 3);
+            break;
+        end
+    end
+       
+    legend(pieLabels, 'Location', 'southoutside', 'Orientation', 'horizontal');
+    title('Coverage Distribution'); 
+
+    % Overall figure title
+    sgtitle('Coverage for a Normally Discretised Flightspace', 'FontSize', 14, 'FontWeight', 'bold');
     
     % Add cameras to the plot
     % hold on;
@@ -67,13 +119,6 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
     %     cameras{i}.plot_camera('label', 'scale', 0.3);
     % end
     
-    axis equal;
-    grid on;
-    xlabel('X (m)');
-    ylabel('Y (m)');
-    zlabel('Z (m)');
-    title(figTitle);
-    view(45, 30);
     
     % Add legend
     % h1 = scatter3(nan, nan, nan, 50, [0, 1, 0], 'filled');

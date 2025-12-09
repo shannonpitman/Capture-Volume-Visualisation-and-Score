@@ -8,17 +8,16 @@
 specs.Cams = 7; %Number of Cameras
 
 %OptiTrack Parameters Taken from their specs. 
-specs.Resolution = [1280 1024]; %VGA resolution
-% specs.PixelSize = 1.4e-6; %Square Pixel Size
+specs.Resolution = [1280 1024]; % Resolution
 specs.PrincipalPoint = [specs.Resolution(1)/2, specs.Resolution(2)/2];
 specs.Focal = 0.0055; %focal length [m]
-specs.FocalWide = 0.0035; % focal length for wide angle camera 
+specs.FocalWide = 0.0035; % focal length for wide angle camera [m]
 specs.Range = 16;%m for passive markers
-specs.RangeWide = 9;%m for pasisve markers
+specs.RangeWide = 9;%m for passive markers
 
 % Target space is an uniformly discretised grid within the flight volume 
 % This workspace volume matches the available dimensions of the MS.G flight envelope 
-flight_envelope = [-3 3; -3 3; 0 2]; %m
+flight_envelope = [-4 4; -4 4; 0 4]; %m
 spacing = 0.5;
 x_marker = flight_envelope(1,1):spacing:flight_envelope(1,2);
 y_marker = flight_envelope(2,1):spacing:flight_envelope(2,2);
@@ -57,8 +56,8 @@ specs.PreComputed.penaltyUncertainty = 100;
 % Pre-compute data for dynamic occlusion
 specs.PreComputed.minTriangAngle = 40; % degrees
 specs.PreComputed.maxTriangAngle = 140; % degrees
-specs.PreComputed.maxCameraRange = 16; %m effective range
-
+specs.PreComputed.maxCameraRange = specs.Range; %m effective range
+specs.PreComputed.maxCameraRangeWide = specs.RangeWide; %m effective range
 
 specs.PreComputed.uncertNorm = 100;  
 specs.PreComputed.occlNorm = 440;  
@@ -93,7 +92,7 @@ R_new_cam1 = T_transform * cam1Orientation; %* T_transform';
 R_new_cam1 = R_new_cam1* rotX;
 % det(R_new_cam1);
 T1 = se3(R_new_cam1, cam1Pos');
-camera1 = CentralCamera(name="cam1", pose=T1, resolution = specs.Resolution, focal = specs.Focal, center = specs.PrincipalPoint);
+camera1 = CentralCamera(name="cam1", pose=T1, resolution = specs.Resolution, focal = specs.FocalWide, center = specs.PrincipalPoint);
 
 cam2Pos = [-4.3058, 3.34875, -4.15416];
 cam2Pos = T_transform*cam2Pos';
@@ -103,7 +102,7 @@ cam2Orientation = [-0.463454, 0.348497,-0.814715;
 R_new_cam2 = T_transform * cam2Orientation;% * T_transform';
 R_new_cam2 = R_new_cam2 * rotX; 
 T2= se3(R_new_cam2, cam2Pos');
-camera2 = CentralCamera(name="cam2", pose=T2, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera2 = CentralCamera(name="cam2", pose=T2, resolution = specs.Resolution, focal = specs.Focal, center = specs.PrincipalPoint);
 
 cam3Pos = [4.41376, 3.32004, -4.03407];
 cam3Pos = T_transform* cam3Pos';
@@ -113,7 +112,7 @@ cam3Orientation =[-0.383207, -0.381934, 0.840999;
 R_new_cam3 = T_transform * cam3Orientation;% * T_transform';
 R_new_cam3 = R_new_cam3 * rotX; 
 T3= se3(R_new_cam3, cam3Pos');
-camera3 = CentralCamera(name="cam3", pose=T3, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera3 = CentralCamera(name="cam3", pose=T3, resolution = specs.Resolution, focal = specs.Focal, center = specs.PrincipalPoint);
 
 cam4Pos = [4.38502, 3.27992, -1.30325];
 cam4Pos = T_transform*cam4Pos';
@@ -123,7 +122,7 @@ cam4Orientation = [-0.0468672, -0.55851, 0.828173;
 R_new_cam4 = T_transform * cam4Orientation;% * T_transform';
 R_new_cam4 = R_new_cam4 * rotX;
 T4= se3(R_new_cam4, cam4Pos');
-camera4 = CentralCamera(name="cam4", pose=T4, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera4 = CentralCamera(name="cam4", pose=T4, resolution = specs.Resolution, focal = specs.FocalWide, center = specs.PrincipalPoint);
 
 cam5Pos = [4.36588, 3.21471, 1.41838];
 cam5Pos = T_transform*cam5Pos';
@@ -133,7 +132,7 @@ cam5Orientation = [0.143307, -0.376961, 0.915076;
 R_new_cam5 = T_transform * cam5Orientation;% * T_transform';
 R_new_cam5 = R_new_cam5 * rotX; 
 T5= se3(R_new_cam5, cam5Pos');
-camera5 = CentralCamera(name="cam5", pose=T5, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera5 = CentralCamera(name="cam5", pose=T5, resolution = specs.Resolution, focal = specs.FocalWide, center = specs.PrincipalPoint);
 
 cam6Pos = [4.33365, 3.33527, 4.16674];
 cam6Pos = T_transform*cam6Pos';
@@ -143,7 +142,7 @@ cam6Orientation = [0.46651, -0.359219, 0.808289;
 R_new_cam6 = T_transform * cam6Orientation;% * T_transform';
 R_new_cam6 = R_new_cam6 * rotX; 
 T6= se3(R_new_cam6, cam6Pos');
-camera6 = CentralCamera(name="cam6", pose=T6, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera6 = CentralCamera(name="cam6", pose=T6, resolution = specs.Resolution, focal = specs.Focal, center = specs.PrincipalPoint);
 
 cam7Pos = [-4.39346, 3.30429, 4.03519];
 cam7Pos = T_transform*cam7Pos';
@@ -153,7 +152,7 @@ cam7Orientation = [0.770965, 0.395039, -0.499556;
 R_new_cam7 = T_transform * cam7Orientation;% * T_transform';
 R_new_cam7 = R_new_cam7 * rotX;
 T7= se3(R_new_cam7, cam7Pos');
-camera7 = CentralCamera(name="cam7", pose=T7, resolution = specs.Resolution, pixel = specs.PixelSize, focal = specs.Focal, center = specs.PrincipalPoint);
+camera7 = CentralCamera(name="cam7", pose=T7, resolution = specs.Resolution, focal = specs.Focal, center = specs.PrincipalPoint);
 
 
 cameras = {camera1, camera2, camera3, camera4, camera5, camera6, camera7};
@@ -211,7 +210,7 @@ cameraPlotFilename = sprintf('%dCams_Run_%s_cameras.png', specs.Cams, dateTimeSt
 saveas(gcf, cameraPlotFilename); %saves as png
 
 
-figTitle = sprintf('Camera Coverage - %d Cameras (Cost: %.4f)', specs.Cams, OptiCost);
+figTitle = sprintf('Camera Coverage of OptiTrack ad hoc Configuration - %d Cameras (Cost: %.4f)', specs.Cams, OptiCost);
 [coverageStats] = visualizeCameraCoverage(cameras, specs, figTitle);
 coveragePlotFilename = sprintf('%dCams_Run_%s_coverage.png', specs.Cams, dateTimeStr);
 saveas(gcf, coveragePlotFilename);

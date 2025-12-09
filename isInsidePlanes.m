@@ -6,7 +6,7 @@ function tf = isInsidePlanes(x, planes, tol, numVisible)
         dVals = planes{i}(4, :); 
 
         dotProd = nVecs' *x(:);
-        if all(dotProd-dVals' < tol) %Returns false if less  than twiddle factor
+        if all(dotProd-dVals' < tol) %Returns false if less than twiddle factor
             tf = false;
             return;
         end

@@ -6,13 +6,10 @@ function errorVolume = resUncertainty(cameras, specs)
     %Camera Parameters
     resolution = specs.Resolution;
     TargetSpace = specs.Target;
-    
-    
-    
-    adjacentSurfaces = specs.Precomputed.adjacentSurfaces; % [1 2; 2 3; 3 4; 4 1]
-    du = specs.Precomputed.du; %pixels
-    dv = specs.Precomputed.dv; %pixels
-    penaltyUncertainty = specs.Precomputed.penaltyUncertainty; %high uncertainty for points camera cannot see 
+    adjacentSurfaces = specs.PreComputed.adjacentSurfaces; % [1 2; 2 3; 3 4; 4 1]
+    du = specs.PreComputed.du; %pixels
+    dv = specs.PreComputed.dv; %pixels
+    penaltyUncertainty = specs.PreComputed.penaltyUncertainty; %high uncertainty for points camera cannot see 
         
     numPoints = specs.NumPoints;
     uncertainties = zeros(numPoints,1);
