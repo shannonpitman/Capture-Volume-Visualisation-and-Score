@@ -8,12 +8,12 @@
 specs.Cams = 7; %Number of Cameras
 
 %OptiTrack Parameters Taken from their specs. 
-specs.Resolution = [1280 1024]; % Resolution
-specs.PrincipalPoint = [specs.Resolution(1)/2, specs.Resolution(2)/2];
+specs.Resolution = [1280 1024]; % Resolution at 240fps
+specs.PrincipalPoint = [specs.Resolution(1)/2, specs.Resolution(2)/2]; %may not be this exactly but it is close
 specs.Focal = 0.0055; %focal length [m]
 specs.FocalWide = 0.0035; % focal length for wide angle camera [m]
-specs.Range = 16;%m for passive markers
-specs.RangeWide = 9;%m for passive markers
+specs.Range = 4;%16m for passive markers
+specs.RangeWide = 3;%9m for passive markers
 
 % Target space is an uniformly discretised grid within the flight volume 
 % This workspace volume matches the available dimensions of the MS.G flight envelope 

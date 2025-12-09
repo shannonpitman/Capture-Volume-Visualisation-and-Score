@@ -15,20 +15,33 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
     
     %Amount of cams seeing each point
     for p = 1:numPoints
-        point = TargetSpace(p,:);
-        visibleCount = 0;
-        
+    point = TargetSpace(p,:);
+    visibleCount = 0;
+    
         for i = 1:numCams
             uv = cameras{i}.project(point);
             u = uv(1);
             v = uv(2);
             
-            %In camera's field of view
+            % In camera's field of view
             if (u >= 1 && u <= resolution(1) && v >= 1 && v <= resolution(2))
-                visibleCount = visibleCount + 1;
+                % Check range based on focal length
+                camCenter = cameras{i}.center();
+                camCenter = camCenter(:)';  % Ensure row vector
+                distance = norm(point - camCenter);
+                
+                % Determine effective range based on lens type
+                if cameras{i}.f == specs.FocalWide
+                    effectiveRange = specs.RangeWide;
+                else
+                    effectiveRange = specs.Range;
+                end
+                
+                if distance <= effectiveRange && distance > 0
+                    visibleCount = visibleCount + 1;
+                end
             end
         end
-        
         cameraCoverage(p) = visibleCount;
     end
 
@@ -141,7 +154,6 @@ function coverageStats = visualizeCameraCoverage(cameras, specs, figTitle)
     fprintf('Average camera coverage: %.2f cameras per point\n', avgCoverage);
     fprintf('Maximum camera coverage: %d cameras per point\n', coverageStats.maxCoverage);
     fprintf('Minimum camera coverage: %d cameras per point\n', coverageStats.minCoverage);
-    fprintf('Median camera coverage: %.2f cameras per point\n', coverageStats.medianCoverage);
     hold off;
 
 end
